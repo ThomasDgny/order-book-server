@@ -6,7 +6,16 @@ const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = "https://order-book-two.vercel.app";
+const allowedOrigins = process.env.ALLOWED_ORIGINS || "http://localhost:3000";
+
+app.use(
+  cors({
+    methods: ["GET", "POST"],
+    origin: allowedOrigins,
+  })
+);
+
+app.use(express.json());
 
 const io = socketIo(server, {
   cors: {
@@ -15,13 +24,7 @@ const io = socketIo(server, {
   },
 });
 
-app.use(
-  cors({
-    methods: ["GET", "POST"],
-    origin: allowedOrigins,
-  })
-);
-app.use(express.json());
+
 
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;

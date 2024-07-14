@@ -1,19 +1,14 @@
+const { switchCoin } = require("./services/indexServices");
+const socketIo = require("socket.io");
 const express = require("express");
 const http = require("http");
-const socketIo = require("socket.io");
 const cors = require("cors");
-const {
-  connectToTicker,
-  connectToBook,
-  disconnectTicker,
-  disconnectBook,
-} = require("./services/binanceService.js");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://order-book-two.vercel.app/"],
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -21,21 +16,17 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json());
 
-function switchCoin(coinID) {
-  disconnectBook();
-  disconnectTicker();
-
-  connectToBook(io, coinID);
-  connectToTicker(io, coinID);
-}
-
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;
   console.log(`Received request to switch coin to ${coinID}`);
-
-  switchCoin(coinID);
-
+  switchCoin(io,coinID);
   res.status(200).send(`Switched to coin ${coinID}`);
+});
+
+app.get("/", (req, res) => {
+  res.send(
+    "Great things happen to those who don't stop believing, trying, learning, and being grateful. ― Roy T. Bennett"
+  );
 });
 
 io.on("connection", (socket) => {

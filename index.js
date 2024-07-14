@@ -8,23 +8,25 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://order-book-two.vercel.app"],
+    origin: "https://order-book-two.vercel.app/",
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-app.use(cors({
-  origin: ["http://localhost:3000", "https://order-book-two.vercel.app"],
-  methods: ["GET", "POST"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "https://order-book-two.vercel.app/",
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;
   console.log(`Received request to switch coin to ${coinID}`);
-  switchCoin(io,coinID);
+  switchCoin(io, coinID);
   res.status(200).send(`Switched to coin ${coinID}`);
 });
 

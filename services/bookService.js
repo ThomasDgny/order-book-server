@@ -1,7 +1,7 @@
 const { handleOrderBookResponse } = require("../helper/orderBookHelper");
 const { BINANCE_WS_URL, ORDER_BOOK } = require("../config/config");
-const { disconnectBook, setBookSocket } = require("./disconnect");
-const { startHeartbeat } = require("./heartBeatServices");
+const { disconnectBook, setBookSocket } = require("../helper/disconnect");
+const { startHeartbeat } = require("../helper/heartBeatServices");
 const { urlBuilder } = require("./urlBuilder");
 const WebSocket = require("ws");
 

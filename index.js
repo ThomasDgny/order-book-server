@@ -8,12 +8,17 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://order-book-two.vercel.app"],
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:3000", "https://order-book-two.vercel.app"],
+  methods: ["GET", "POST"],
+  credentials: true,
+}));
 app.use(express.json());
 
 app.post("/api/setcoin", (req, res) => {

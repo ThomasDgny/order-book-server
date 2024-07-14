@@ -1,4 +1,4 @@
-const { disconnectBook, disconnectTicker } = require("./disconnect");
+const { disconnectBook, disconnectTicker } = require("../helper/disconnect");
 const { connectToTicker } = require("./tickerService");
 const { connectToBook } = require("./bookService");
 

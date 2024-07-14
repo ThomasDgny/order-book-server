@@ -24,6 +24,7 @@ function handleOrderBookResponse(data) {
   }));
 
   const processedData = {
+    pair: data.s,
     bids: manageArraySize([], calculateRunningTotal(updatedBids)),
     asks: manageArraySize([], calculateRunningTotal(updatedAsks)),
   };

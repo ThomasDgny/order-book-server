@@ -1,6 +1,6 @@
 const { disconnectTicker, setTickerSocket } = require("../helper/disconnect");
-const { BINANCE_WS_URL, TICKER } = require("../config/config");
 const { startHeartbeat } = require("../helper/heartBeatServices");
+const { BINANCE_WS_URL, TICKER } = require("../config/config");
 const { urlBuilder } = require("./urlBuilder");
 const WebSocket = require("ws");
 

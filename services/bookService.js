@@ -1,11 +1,9 @@
+const { disconnectBook, setBookSocket } = require("../helper/disconnect");
 const { handleOrderBookResponse } = require("../helper/orderBookHelper");
 const { BINANCE_WS_URL, ORDER_BOOK } = require("../config/config");
-const { disconnectBook, setBookSocket } = require("../helper/disconnect");
 const { startHeartbeat } = require("../helper/heartBeatServices");
 const { urlBuilder } = require("./urlBuilder");
 const WebSocket = require("ws");
-
-
 
 function connectToBook(io, coinID) {
   disconnectBook();
@@ -23,6 +21,7 @@ function connectToBook(io, coinID) {
     const parsedData = JSON.parse(data);
     if (parsedData.e === "depthUpdate") {
       const processedData = handleOrderBookResponse(parsedData);
+      console.log(processedData)
       io.emit("orderBookUpdate", processedData);
     }
   });

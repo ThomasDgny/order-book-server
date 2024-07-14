@@ -6,21 +6,19 @@ const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = ["https://order-book-two.vercel.app"];
+const allowedOrigins = "https://order-book-two.vercel.app";
 
 const io = socketIo(server, {
   cors: {
-    origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true,
+    origin: allowedOrigins,
   },
 });
 
 app.use(
   cors({
-    origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true,
+    origin: allowedOrigins,
   })
 );
 app.use(express.json());

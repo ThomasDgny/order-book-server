@@ -34,6 +34,11 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post("/api/test", (req, res) => {
+  res.send("Received POST request at /api/test");
+});
+
+
 const io = socketIo(server, {
   cors: {
     origin: allowedOrigins,

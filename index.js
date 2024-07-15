@@ -2,10 +2,12 @@ const { switchCoin } = require("./services/indexServices");
 const socketIo = require("socket.io");
 const express = require("express");
 const http = require("http");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
 
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.post("/api/test", (req, res) => {

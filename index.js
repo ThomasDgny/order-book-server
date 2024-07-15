@@ -7,6 +7,12 @@ const cors = require("cors");
 const app = express();
 const server = http.createServer(app);
 
+const corsOption = {
+  origin: "*",
+  methods: ["POST", "GET"],
+  credentials: true,
+};
+
 app.use(cors());
 
 app.use(express.json());
@@ -16,11 +22,7 @@ app.post("/api/test", (req, res) => {
 });
 
 const io = socketIo(server, {
-  cors: {
-    origin: "*",
-    methods: ["POST", "GET"],
-    credentials: true
-  }
+  cors: corsOption,
 });
 
 app.post("/api/setcoin", (req, res) => {

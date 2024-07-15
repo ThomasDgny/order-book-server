@@ -7,13 +7,14 @@ const cors = require("cors");
 const app = express();
 const server = http.createServer(app);
 
-const corsOption = {
+const corsOptions = {
   origin: "*",
-  methods: ["POST", "GET"],
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -22,8 +23,13 @@ app.post("/api/test", (req, res) => {
 });
 
 const io = socketIo(server, {
-  cors: corsOption,
+  cors: corsOptions,
 });
+
+app.post("/api/test", (req, res) => {
+  res.status(200).send("test success");
+});
+
 
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;

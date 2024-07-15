@@ -2,22 +2,38 @@ const { switchCoin } = require("./services/indexServices");
 const socketIo = require("socket.io");
 const express = require("express");
 const http = require("http");
-// const cors = require("cors");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = "https://paper-order-book.vercel.app" || "http://localhost:3000"  ;
 
-const corsOption = {
+const allowedOrigins = ["https://paper-order-book.vercel.app", "http://localhost:3000"];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST"],
-  origin: "*",
+  credentials: true,
 };
 
-// app.use(cors(corsOption));
-
+app.use(cors(corsOptions));
 app.use(express.json());
 
-const io = socketIo(server, { cors: corsOption });
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
+
+const io = socketIo(server, { cors: corsOptions });
 
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;

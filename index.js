@@ -19,6 +19,7 @@ const corsOptions = {
   },
   methods: ["GET", "POST"],
   credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
@@ -33,7 +34,14 @@ app.use((req, res, next) => {
   next();
 });
 
-const io = socketIo(server, { cors: corsOptions });
+const io = socketIo(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  },
+});
 
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;

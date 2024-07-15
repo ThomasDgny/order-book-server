@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 app.post("/api/test", (req, res) => {

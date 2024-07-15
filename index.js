@@ -10,7 +10,7 @@ const server = http.createServer(app);
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: "*",
   credentials: true,
 };
 
@@ -24,10 +24,6 @@ app.post("/api/test", (req, res) => {
 
 const io = socketIo(server, {
   cors: corsOptions,
-});
-
-app.post("/api/test", (req, res) => {
-  res.status(200).send("test success");
 });
 
 app.post("/api/setcoin", (req, res) => {

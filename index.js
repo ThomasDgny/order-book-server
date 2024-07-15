@@ -30,7 +30,6 @@ app.post("/api/test", (req, res) => {
   res.status(200).send("test success");
 });
 
-
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;
   console.log(`Received request to switch coin to ${coinID}`);

@@ -30,8 +30,7 @@ This project provides a server for an order book application. It uses Node.js, E
 
 Create a `.env` file in the root directory of your project and add any necessary configuration variables. For example:
 ```
-PORT=4000
-ALLOWED_ORIGINS=https://order-book-two.vercel.app
+ALLOWED_ORIGINS=http://localhost:3000/
 ```
 
 ## Endpoints

@@ -1,4 +1,4 @@
-const { switchCoin } = require("./services/indexServices");
+const { switchCoin } = require("./services/switchCoin");
 const socketIo = require("socket.io");
 const express = require("express");
 const http = require("http");

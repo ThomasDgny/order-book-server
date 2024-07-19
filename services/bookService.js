@@ -1,38 +1,60 @@
-const { disconnectBook, setBookSocket } = require("../helper/disconnect");
+const WebSocket = require("ws");
 const { handleOrderBookResponse } = require("../helper/orderBookHelper");
 const { BINANCE_WS_URL, ORDER_BOOK } = require("../config/config");
-const { startHeartbeat } = require("../helper/heartBeatServices");
 const { urlBuilder } = require("./urlBuilder");
-const WebSocket = require("ws");
+
+let bookSocket;
+let currentPair;
 
 function connectToBook(io, coinID) {
-  disconnectBook();
+  if (!bookSocket) {
+    const url = urlBuilder(BINANCE_WS_URL, coinID, ORDER_BOOK);
+    bookSocket = new WebSocket(url);
 
-  const url = urlBuilder(BINANCE_WS_URL, coinID, ORDER_BOOK);
-  const bookSocket = new WebSocket(url);
-  setBookSocket(bookSocket);
+    bookSocket.on("open", () => {
+      console.log(`Connected to Binance WebSocket for ${coinID}`);
+      subscribeBook(coinID);
+    });
 
-  bookSocket.on("open", () => {
-    console.log(`Connected to Binance WebSocket for ${coinID}`);
-    startHeartbeat(bookSocket);
-  });
+    bookSocket.on("message", (data) => {
+      const parsedData = JSON.parse(data);
+      if (parsedData.e === "depthUpdate") {
+        const processedData = handleOrderBookResponse(parsedData);
+        io.emit("orderBookUpdate", processedData);
+      }
+    });
 
-  bookSocket.on("message", (data) => {
-    const parsedData = JSON.parse(data);
-    if (parsedData.e === "depthUpdate") {
-      const processedData = handleOrderBookResponse(parsedData);
-      console.log(processedData)
-      io.emit("orderBookUpdate", processedData);
-    }
-  });
+    bookSocket.on("close", () => {
+      console.log(`Binance WebSocket closed for ${coinID}`);
+    });
 
-  bookSocket.on("close", () => {
-    console.log(`Binance WebSocket closed for ${coinID}`);
-  });
+    bookSocket.on("error", (error) => {
+      console.error(`Binance WebSocket error for ${coinID}:`, error);
+    });
+  } else {
+    unsubscribeBook(currentPair);
+    subscribeBook(coinID);
+  }
 
-  bookSocket.on("error", (error) => {
-    console.error(`Binance WebSocket error for ${coinID}:`, error);
-  });
+  currentPair = coinID;
 }
 
-module.exports = { connectToBook };
+function subscribeBook(coinID) {
+  const subscribeMessage = {
+    method: "SUBSCRIBE",
+    params: [`${coinID.toLowerCase()}@depth`],
+    id: 1,
+  };
+  bookSocket.send(JSON.stringify(subscribeMessage));
+}
+
+function unsubscribeBook(coinID) {
+  const unsubscribeMessage = {
+    method: "UNSUBSCRIBE",
+    params: [`${coinID.toLowerCase()}@depth`],
+    id: 1,
+  };
+  bookSocket.send(JSON.stringify(unsubscribeMessage));
+}
+
+module.exports = { connectToBook, unsubscribeBook };

@@ -1,33 +1,58 @@
-const { disconnectTicker, setTickerSocket } = require("../helper/disconnect");
-const { startHeartbeat } = require("../helper/heartBeatServices");
+const WebSocket = require("ws");
 const { BINANCE_WS_URL, TICKER } = require("../config/config");
 const { urlBuilder } = require("./urlBuilder");
-const WebSocket = require("ws");
+
+let tickerSocket;
+let currentPair;
 
 function connectToTicker(io, coinID) {
-  disconnectTicker();
+  if (!tickerSocket) {
+    const url = urlBuilder(BINANCE_WS_URL, coinID, TICKER);
+    tickerSocket = new WebSocket(url);
 
-  const url = urlBuilder(BINANCE_WS_URL, coinID, TICKER);
-  const tickerSocket = new WebSocket(url);
-  setTickerSocket(tickerSocket);
+    tickerSocket.on("open", () => {
+      console.log(`Connected to Binance Ticker WebSocket for ${coinID}`);
+      subscribeTicker(coinID);
+    });
 
-  tickerSocket.on("open", () => {
-    console.log(`Connected to Binance Ticker WebSocket for ${coinID}`);
-    startHeartbeat(tickerSocket);
-  });
+    tickerSocket.on("message", (data) => {
+      const parsedData = JSON.parse(data);
+      if (parsedData) {
+        io.emit("tickerUpdate", parsedData);
+      }
+    });
 
-  tickerSocket.on("message", (data) => {
-    const parsedData = JSON.parse(data);
-    io.emit("tickerUpdate", parsedData);
-  });
+    tickerSocket.on("close", () => {
+      console.log(`Binance Ticker WebSocket closed for ${coinID}`);
+    });
 
-  tickerSocket.on("close", () => {
-    console.log(`Binance Ticker WebSocket closed for ${coinID}`);
-  });
+    tickerSocket.on("error", (error) => {
+      console.error(`Binance Ticker WebSocket error for ${coinID}:`, error);
+    });
+  } else {
+    unsubscribeTicker(currentPair);
+    subscribeTicker(coinID);
+  }
 
-  tickerSocket.on("error", (error) => {
-    console.error(`Binance Ticker WebSocket error for ${coinID}:`, error);
-  });
+  currentPair = coinID;
 }
 
-module.exports = { connectToTicker };
+function subscribeTicker(coinID) {
+  const subscribeMessage = {
+    method: "SUBSCRIBE",
+    params: [`${coinID.toLowerCase()}@ticker`],
+    id: 1,
+  };
+  tickerSocket.send(JSON.stringify(subscribeMessage));
+}
+
+function unsubscribeTicker(coinID) {
+  const unsubscribeMessage = {
+    method: "UNSUBSCRIBE",
+    params: [`${coinID.toLowerCase()}@ticker`],
+    id: 1,
+  };
+  tickerSocket.send(JSON.stringify(unsubscribeMessage));
+}
+
+module.exports = { connectToTicker, unsubscribeTicker };

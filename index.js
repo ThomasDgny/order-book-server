@@ -1,30 +1,22 @@
-const { switchCoin } = require("./services/switchCoin");
-const socketIo = require("socket.io");
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+const socketIo = require("socket.io");
+const { switchCoin } = require("./services/switchCoin");
 
 const app = express();
 const server = http.createServer(app);
-
-const corsOptions = {
-  origin: "*",
-  methods: ["GET", "POST"],
-  allowedHeaders: "*",
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
-
-app.use(express.json());
-
-app.post("/api/test", (req, res) => {
-  res.send("Received POST request at /api/test");
-});
-
 const io = socketIo(server, {
-  cors: corsOptions,
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: "*",
+    credentials: true,
+  },
 });
+
+app.use(cors());
+app.use(express.json());
 
 app.post("/api/setcoin", (req, res) => {
   const { coinID } = req.body;
@@ -39,11 +31,15 @@ app.get("/", (req, res) => {
   );
 });
 
-io.on("connection", (socket) => {
-  console.log("New client connected");
+io.on("connection", (clientSocket) => {
+  console.log("Client connected");
 
-  socket.on("disconnect", () => {
+  clientSocket.on("disconnect", () => {
     console.log("Client disconnected");
+  });
+
+  clientSocket.on("error", (error) => {
+    console.error("Error from client WebSocket:", error);
   });
 });
 

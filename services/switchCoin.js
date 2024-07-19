@@ -1,11 +1,7 @@
-const { disconnectBook, disconnectTicker } = require("../helper/disconnect");
-const { connectToTicker } = require("./tickerService");
 const { connectToBook } = require("./bookService");
+const { connectToTicker } = require("./tickerService");
 
 function switchCoin(io, coinID) {
-  disconnectBook();
-  disconnectTicker();
-
   connectToBook(io, coinID);
   connectToTicker(io, coinID);
 }

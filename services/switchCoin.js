@@ -1,9 +1,7 @@
-const { connectToBook } = require("./bookService");
-const { connectToTicker } = require("./tickerService");
+const { connectToBinance } = require("./webSocket");
 
 function switchCoin(io, coinID) {
-  connectToBook(io, coinID);
-  connectToTicker(io, coinID);
+  connectToBinance(io, coinID);
 }
 
 module.exports = { switchCoin };

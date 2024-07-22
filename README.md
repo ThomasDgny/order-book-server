@@ -76,9 +76,8 @@ ALLOWED_ORIGINS=http://localhost:3000/
 │ ├── orderBookHelper.js # Helper functions for managing order book data
 ├── node_modules
 ├── services
-│ ├── bookService.js # Handles order book WebSocket connections
-│ ├── indexServices.js # Switches the coin and manages connections
-│ ├── tickerService.js # Handles ticker WebSocket connections
+│ ├── webSocket.js # Handles order book WebSocket connections
+│ ├── switchCoin.js # Switches the coin and manages connections
 │ ├── urlBuilder.js # Builds URLs for WebSocket connections
 ├── .env # Environment variables
 ├── .gitignore # Files and directories to ignore in git
